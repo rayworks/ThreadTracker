@@ -1,16 +1,23 @@
 apply plugin: 'java-library'
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'java-gradle-plugin'
 
-// must be applied after your artifact generating plugin (eg. java / com.android.library)
-apply plugin: 'com.novoda.bintray-release'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
     // 不能太高，以免和用户as或项目冲突
-    implementation 'com.android.tools.build:gradle:4.2.0'
+//    implementation 'com.android.tools.build:gradle:4.2.0'
+    implementation("com.android.tools.build:gradle-api:8.7.3")
+    implementation("org.ow2.asm:asm-util:9.7.1")
 
     testImplementation 'junit:junit:4.12'
 }
@@ -19,30 +26,35 @@ repositories {
     mavenCentral()
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            //本地Maven
-            repository(url: uri('../repositories'))
-            pom.groupId = 'com.codoon.threadtracker'
-            pom.artifactId = 'threadtracker-plugin'
-            pom.version = '1.2.0'
+group = 'com.codoon.threadtracker'
+version = "$threadtracker"
+
+afterEvaluate {
+    publishing {
+        publications {
+            PluginJava(MavenPublication) {
+                from components.java
+
+                groupId = 'com.codoon.threadtracker'
+                artifactId = 'threadtracker-plugin'
+                version = "$threadtracker"
+            }
+        }
+
+        repositories {
+            maven {
+                setUrl('../repositories')
+            }
         }
     }
 }
 
-publish {
-    userOrg = 'codooner2020'
-    repoName = 'maven'
-    groupId = 'com.codoon.threadtracker'
-    artifactId = 'threadtracker-plugin'
-    publishVersion = '1.1.0'
-    desc = 'thread tracing plugin for android'
-    website = 'https://github.com/codoon/ThreadTracker'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+gradlePlugin {
+    plugins {
+        create("threadTrackerPlugin") {
+            id = "com.codoon.threadtracker.plugins.ThreadTrackerPlugin"
+            implementationClass = "com.codoon.threadtracker.plugins.ThreadTrackerPlugin"
+        }
+    }
 }
 

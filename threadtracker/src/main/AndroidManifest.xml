@@ -15,12 +15,13 @@
         </provider>
         <activity
             android:name="com.codoon.threadtracker.ui.TrackerActivity"
+            android:exported="true"
             android:icon="@mipmap/threadtracker_launcher"
             android:roundIcon="@mipmap/threadtracker_launcher_round"
             android:label="ThreadTracker"
             android:theme="@style/ThreadTrackerAppTheme"
             android:launchMode="singleTask"
-            android:taskAffinity="com.codoon.threadtracker.task">
+            android:taskAffinity="com.codoon.threadtracker.${applicationId}">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,7 +29,7 @@
         </activity>
         <activity
             android:name="com.codoon.threadtracker.ui.ThreadDetailsActivity"
-            android:taskAffinity="com.codoon.threadtracker.task" />
+            android:taskAffinity="com.codoon.threadtracker.${applicationId}" />
 
     </application>
 

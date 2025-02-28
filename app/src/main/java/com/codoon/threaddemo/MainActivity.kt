@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.codoon.threaddemo.test.MyAsyncTask
 import com.codoon.threaddemo.test.MyRunnable
@@ -11,7 +12,6 @@ import com.codoon.threaddemo.test.MyThread
 import com.codoon.threadlib.MyJar
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import java.util.concurrent.*
 
@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // 按钮触发的各种线程
+        val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
             button.isEnabled = false
 

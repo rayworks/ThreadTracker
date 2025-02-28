@@ -8,10 +8,10 @@ import android.os.Message
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.codoon.threadthracker.R
 import com.codoon.threadtracker.ThreadInfoManager
 import com.codoon.threadtracker.TrackerUtils.setStatusBarColor
-import kotlinx.android.synthetic.main.threadtracker_activity_tracker.*
 
 /**
  * 线程/线程池列表
@@ -31,6 +31,11 @@ class TrackerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.threadtracker_activity_tracker)
         setStatusBarColor(window)
+
+        val refreshBtn = findViewById<View>(R.id.refreshBtn)
+        val refreshProgress = findViewById<View>(R.id.refreshProgress)
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
         refreshBtn.setOnClickListener {
             refreshBtn.visibility = View.GONE
@@ -55,6 +60,10 @@ class TrackerActivity : Activity() {
     private fun refreshList(toast: Boolean) {
         val infoResult = ThreadInfoManager.INSTANCE.buildAllThreadInfo()
         runOnUiThread {
+            val refreshBtn = findViewById<View>(R.id.refreshBtn)
+            val refreshProgress = findViewById<View>(R.id.refreshProgress)
+            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+
             (recyclerView.adapter as TrackerAdapter).setItemList(infoResult.list)
             refreshBtn.visibility = View.VISIBLE
             refreshProgress.visibility = View.GONE

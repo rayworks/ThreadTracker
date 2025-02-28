@@ -6,3 +6,5 @@
 /ThreadTracker.iml
 /.gradle/buildOutputCleanup/
 local.properties
+/repositories
+.DS_Store

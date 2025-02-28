@@ -16,8 +16,12 @@ import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.codoon.threadthracker.R
+import com.codoon.threadthracker.databinding.ThreadtrackerActivityDetailsBinding
 import com.codoon.threadtracker.LOG_TAG
 import com.codoon.threadtracker.ThreadInfoManager
 import com.codoon.threadtracker.TrackerUtils.setStatusBarColor
@@ -25,7 +29,6 @@ import com.codoon.threadtracker.UserPackage
 import com.codoon.threadtracker.bean.ShowInfo
 import com.codoon.threadtracker.bean.ThreadInfo
 import com.codoon.threadtracker.bean.ThreadPoolInfo
-import kotlinx.android.synthetic.main.threadtracker_activity_details.*
 
 
 /**
@@ -44,11 +47,18 @@ class ThreadDetailsActivity : Activity() {
         }
     }
 
+    private lateinit var binding: ThreadtrackerActivityDetailsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.threadtracker_activity_details)
+
+        binding = ThreadtrackerActivityDetailsBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
         setStatusBarColor(window)
-        backBtn.setOnClickListener { onBackPressed() }
+
+        binding.backBtn.setOnClickListener { onBackPressed() }
         showDetails()
     }
 
@@ -94,10 +104,12 @@ class ThreadDetailsActivity : Activity() {
                 Log.d(LOG_TAG, "details:${threadInfo}")
                 showSingleThreadInfo(threadInfo)
             }
+
             ShowInfo.POOL -> { // 展示线程池详细信息
                 Log.d(LOG_TAG, "details:${poolInfo}")
                 showPoolInfo(poolInfo)
             }
+
             ShowInfo.POOL_THREAD -> { // 展示线程池中线程详细信息
                 Log.d(LOG_TAG, "details:${threadInfo}")
                 showPoolThreadInfo(threadInfo)
@@ -107,114 +119,116 @@ class ThreadDetailsActivity : Activity() {
 
     @SuppressLint("SetTextI18n")
     private fun showSingleThreadInfo(threadInfo: ThreadInfo?) {
+
         threadInfo?.apply {
-            infoDetails.text =
+            binding.infoDetails.text =
                 "id: ${id}\n\n" +
                         "name: ${name}\n\n" +
                         "state: $state"
-            stack1Details.text = highlightStack(callStack)
+            binding.stack1Details.text = highlightStack(callStack)
             if (callStack.isEmpty()) {
-                stack1Details.setTextColor(colorBlue)
-                stack1Details.text = "unknown"
-                stack1TipsLayout.visibility = View.GONE
+                binding.stack1Details.setTextColor(colorBlue)
+                binding.stack1Details.text = "unknown"
+                binding.stack1TipsLayout.visibility = View.GONE
             } else {
                 if (callThreadId != Looper.getMainLooper().thread.id) {
-                    stack1Tips.text = "Call from thread $callThreadId"
-                    stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
-                    stack1Jump.visibility = View.VISIBLE
-                    stack1Jump.setOnClickListener {
+                    binding.stack1Tips.text = "Call from thread $callThreadId"
+                    binding.stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
+                    binding.stack1Jump.visibility = View.VISIBLE
+                    binding.stack1Jump.setOnClickListener {
                         startDetailsActivity(
                             this@ThreadDetailsActivity,
                             ShowInfo(threadId = callThreadId)
                         )
                     }
                 } else {
-                    stack1Tips.text = "Call from main thread"
-                    stack1Jump.visibility = View.GONE
+                    binding.stack1Tips.text = "Call from main thread"
+                    binding.stack1Jump.visibility = View.GONE
                 }
             }
-            stack2Details.text = highlightStack(runningStack)
+            binding.stack2Details.text = highlightStack(runningStack)
         }
-        infoTitle.text = "Thread Info"
-        stack1Title.text = "Call Stack" // start调用栈
+        binding.infoTitle.text = "Thread Info"
+        binding.stack1Title.text = "Call Stack" // start调用栈
     }
 
     @SuppressLint("SetTextI18n")
     private fun showPoolInfo(poolInfo: ThreadPoolInfo?) {
         poolInfo?.apply {
-            infoDetails.text = "poolName: ${poolName}"
-            stack1Details.text = highlightStack(createStack)
+            binding.infoDetails.text = "poolName: ${poolName}"
+            binding.stack1Details.text = highlightStack(createStack)
             if (createStack.isEmpty()) {
-                stack1Details.setTextColor(colorBlue)
-                stack1Details.text = "unknown"
-                stack1TipsLayout.visibility = View.GONE
+                binding.stack1Details.setTextColor(colorBlue)
+                binding.stack1Details.text = "unknown"
+                binding.stack1TipsLayout.visibility = View.GONE
             } else {
                 if (createThreadId != Looper.getMainLooper().thread.id) {
-                    stack1Tips.text = "Create from thread $createThreadId"
-                    stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
-                    stack1Jump.visibility = View.VISIBLE
-                    stack1Jump.setOnClickListener {
+                    binding.stack1Tips.text = "Create from thread $createThreadId"
+                    binding.stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
+                    binding.stack1Jump.visibility = View.VISIBLE
+                    binding.stack1Jump.setOnClickListener {
                         startDetailsActivity(
                             this@ThreadDetailsActivity,
                             ShowInfo(threadId = createThreadId)
                         )
                     }
                 } else {
-                    stack1Tips.text = "Create from main thread"
-                    stack1Jump.visibility = View.GONE
+                    binding.stack1Tips.text = "Create from main thread"
+                    binding.stack1Jump.visibility = View.GONE
                 }
             }
         }
-        infoTitle.text = "ThreadPool Info"
-        stack1Title.text = "Create Stack" // 线程池创建栈
+        binding.infoTitle.text = "ThreadPool Info"
+        binding.stack1Title.text = "Create Stack" // 线程池创建栈
 
-        stack2Title.visibility = View.GONE
-        stack2Details.visibility = View.GONE
+        binding.stack2Title.visibility = View.GONE
+        binding.stack2Details.visibility = View.GONE
     }
 
     @SuppressLint("SetTextI18n")
     private fun showPoolThreadInfo(threadInfo: ThreadInfo?) {
+
         threadInfo?.apply {
-            infoDetails.text =
+            binding.infoDetails.text =
                 "id: ${id}\n\n" +
                         "name: ${name}\n\n" +
                         "state: ${state}\n\n" +
                         "pool: ${poolName}"
-            stack1Details.text = highlightStack(callStack)
+            binding.stack1Details.text = highlightStack(callStack)
             if (callStack.isEmpty()) {
-                stack1Details.setTextColor(colorBlue)
-                stack1Details.text = "no task running"
-                stack1TipsLayout.visibility = View.GONE
+                binding.stack1Details.setTextColor(colorBlue)
+                binding.stack1Details.text = "no task running"
+                binding.stack1TipsLayout.visibility = View.GONE
             } else {
                 if (callThreadId != Looper.getMainLooper().thread.id) {
-                    stack1Tips.text = "Task add from thread $callThreadId"
-                    stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
-                    stack1Jump.visibility = View.VISIBLE
-                    stack1Jump.setOnClickListener {
+                    binding.stack1Tips.text = "Task add from thread $callThreadId"
+                    binding.stack1Jump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
+                    binding.stack1Jump.visibility = View.VISIBLE
+                    binding.stack1Jump.setOnClickListener {
                         startDetailsActivity(
                             this@ThreadDetailsActivity,
                             ShowInfo(threadId = callThreadId)
                         )
                     }
                 } else {
-                    stack1Tips.text = "Task add from main thread"
-                    stack1Jump.visibility = View.GONE
+                    binding.stack1Tips.text = "Task add from main thread"
+                    binding.stack1Jump.visibility = View.GONE
                 }
             }
 
-            infoTitleJump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
-            infoTitleJump.setOnClickListener {
+            binding.infoTitleJump.paint.flags = Paint.UNDERLINE_TEXT_FLAG
+            binding.infoTitleJump.setOnClickListener {
                 startDetailsActivity(
                     this@ThreadDetailsActivity,
                     ShowInfo(poolName = poolName)
                 )
             }
-            infoTitleTipsLayout.visibility = View.VISIBLE
+            binding.infoTitleTipsLayout.visibility = View.VISIBLE
 
-            stack2Details.text = highlightStack(runningStack)
+            binding.stack2Details.text = highlightStack(runningStack)
         }
-        infoTitle.text = "Thread Info"
-        stack1Title.text = "Task Add Stack" // 线程池中线程正在运行任务的添加栈
+        binding.infoTitle.text = "Thread Info"
+        binding.stack1Title.text = "Task Add Stack" // 线程池中线程正在运行任务的添加栈
     }
 
     private fun highlightStack(stack0: String): SpannableString {

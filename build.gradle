@@ -2,31 +2,30 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.3.72'
-        threadtracker = '1.2.0'
+        kotlin_version = '1.9.22'
+        threadtracker = '1.3.0'
     }
     repositories {
         google()
-//        jcenter()
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        mavenCentral()
         maven {
             url uri('./repositories') //指定本地maven路径
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0'
+        classpath 'com.android.tools.build:gradle:8.7.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.codoon.threadtracker:threadtracker-plugin:$threadtracker"
-        classpath 'com.novoda:bintray-release:0.8.1'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        maven {
+            url uri('../repositories')
+        }
     }
 
     tasks.withType(Javadoc) {
