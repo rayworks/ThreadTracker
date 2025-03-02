@@ -39,6 +39,30 @@ https://juejin.im/post/6855586076132655118/
 
 \* 如果您的项目尚不支持 androidx，可把以上 version 全部改成 1.0.0；版本 1.1.0 及以后均需 androidx 支持。
 
+### Note ⚠️
+
+Please use [your personal GitHub token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to integrate the library with version `2.1.0+` due to lack of maintenance on `codoon`'s [original repo](https://github.com/codoon/ThreadTracker).
+
+```
+repositories {
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+        credentials {
+            username = "${your-github-username}"
+            password = "${your-github-token}"
+        }
+    }
+}
+
+...
+
+dependencies {
+    debugImplementation "com.codoon.threadtracker:threadtracker:2.1.0"
+}
+
+```
+
 ## Coming soon...
 * 统计三方 jar 包线程状态，看是谁在为所欲为
 * 按线程状态/类型筛选，按运行时间排序
