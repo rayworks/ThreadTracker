@@ -71,8 +71,20 @@ afterEvaluate {
 
         repositories {
             maven {
-                setUrl('../repositories')
+                name = "GitHubPackages"
+
+                url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+
+                credentials {
+                    username = "${githubUserName}"
+                    password = "${githubToken}"
+                }
             }
         }
+        /*repositories {
+            maven {
+                url uri('../repositories')
+            }
+        }*/
     }
 }

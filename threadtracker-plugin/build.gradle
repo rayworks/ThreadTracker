@@ -43,18 +43,21 @@ afterEvaluate {
 
         repositories {
             maven {
-                setUrl('../repositories')
+                name = "GitHubPackages"
+
+                url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+
+                credentials {
+                    username = "${githubUserName}"
+                    password = "${githubToken}"
+                }
             }
         }
+
+        /*repositories {
+            maven {
+                url uri('../repositories')
+            }
+        }*/
     }
 }
-
-gradlePlugin {
-    plugins {
-        create("threadTrackerPlugin") {
-            id = "com.codoon.threadtracker.plugins.ThreadTrackerPlugin"
-            implementationClass = "com.codoon.threadtracker.plugins.ThreadTrackerPlugin"
-        }
-    }
-}
-
