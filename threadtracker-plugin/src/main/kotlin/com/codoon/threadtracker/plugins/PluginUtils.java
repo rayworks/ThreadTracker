@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-class PluginUtils {
+public final class PluginUtils {
 
     // 用户代码包名列表统计
     private static HashSet<String> classPathSet = new HashSet<>();
@@ -35,7 +35,7 @@ class PluginUtils {
     }
 
     static void addClassPath(String classPath) {
-        // System.out.println("#~   "+classPath+"   ~#");
+        System.out.println("#~   " + classPath + "   ~#");
         if (classPath.startsWith("java.") ||
                 classPath.startsWith("android.") ||
                 classPath.startsWith("androidx.") ||
@@ -114,11 +114,12 @@ class PluginUtils {
     }
 
     static void log(String str) {
-        // System.out.println(str);
+        System.out.println(str);
     }
 
     // 记录注解生成的类，统计高亮用户代码时将其去除
     static boolean dealAptFile() {
+        System.out.println(">>> processing apt info");
         for (String path : projectPathList) {
             path = path + File.separator + "build" + File.separator + "generated" + File.separator + "source" + File.separator;
             getFileList(path);
@@ -151,5 +152,18 @@ class PluginUtils {
                 getFileList(file.getAbsolutePath());
             }
         }
+    }
+
+    public static boolean checkClassFile(String name, boolean isJar) {
+        if (isJar) {
+            int lastIndex = name.lastIndexOf('/');
+            if (lastIndex != -1) {
+                name = name.substring(lastIndex + 1, name.length());
+            }
+            // 只要/后面的文件名，以便后续调用startsWith判断
+        }
+        return (name.endsWith(".class") && !name.startsWith("R\\$")
+                && name != "R.class" && !name.startsWith("BR\\$")
+                && name != "BR.class" && name != "BuildConfig.class");
     }
 }

@@ -15,7 +15,7 @@ import static com.codoon.threadtracker.plugins.ClassConstant.S_Thread;
 import static com.codoon.threadtracker.plugins.ClassConstant.S_ThreadPoolExecutor;
 import static com.codoon.threadtracker.plugins.ClassConstant.S_Timer;
 
-class ThreadTrackerClassVisitor extends ClassVisitor implements Opcodes {
+public class ThreadTrackerClassVisitor extends ClassVisitor implements Opcodes {
 
     private String className;
     private boolean changingSuper = false; // 是否处于改继承状态
@@ -33,6 +33,7 @@ class ThreadTrackerClassVisitor extends ClassVisitor implements Opcodes {
         buildingPackage = false;
         className = name;
 
+        System.out.println(">>> try visiting class name : " + className + " | access : " + access);
         if (filterClass(className)) {
             super.visit(version, access, name, signature, superName, interfaces);
             return;
@@ -82,17 +83,19 @@ class ThreadTrackerClassVisitor extends ClassVisitor implements Opcodes {
     }
 
     @Override
-    public MethodVisitor visitMethod(int access0, String name0, String desc0, String signature0, String[] exceptions) {
-        MethodVisitor mv = cv.visitMethod(access0, name0, desc0, signature0, exceptions);
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+
         if (filterClass(className)) {
             return mv;
         }
 
+        System.out.println(">>> visiting method: " + name);
         int opCode = Opcodes.ASM9;
         if (changingSuper) { // 改继承
             mv = new ChangeSuperMethodVisitor(opCode, mv, className);
         } else {
-            if (buildingPackage && name0.equals("buildPackageList")) {
+            if (buildingPackage && name.equals("buildPackageList")) {
                 mv = new AddPackageMethodVisitor(opCode, mv);
             } else {
                 mv = new ChangeProxyMethodVisitor(opCode, mv, className);

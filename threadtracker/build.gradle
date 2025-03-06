@@ -69,7 +69,7 @@ afterEvaluate {
             }
         }
 
-        repositories {
+        /*repositories {
             maven {
                 name = "GitHubPackages"
 
@@ -80,11 +80,11 @@ afterEvaluate {
                     password = "${githubToken}"
                 }
             }
-        }
-        /*repositories {
+        }*/
+        repositories {
             maven {
                 url uri('../repositories')
             }
-        }*/
+        }
     }
 }
