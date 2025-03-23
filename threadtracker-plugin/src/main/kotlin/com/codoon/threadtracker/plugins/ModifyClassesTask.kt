@@ -1,11 +1,8 @@
 package com.codoon.threadtracker.plugins
 
 import com.codoon.threadtracker.plugins.PluginUtils.checkClassFile
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.Directory
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
@@ -14,18 +11,18 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassWriter
-import java.io.FileInputStream
-
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
+import org.objectweb.asm.ClassWriter
 import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
+
 
 abstract class ModifyClassesTask : DefaultTask() {
     // This property will be set to all Jar files available in scope
@@ -50,55 +47,46 @@ abstract class ModifyClassesTask : DefaultTask() {
                 FileOutputStream(output.get().asFile)
             )
         )
+        println("Output jar file : ${output.get().asFile.absolutePath}")
 
         // copy classes from jar files without modification
         allJars.get().forEach { file ->
             println("handling Jar " + file.asFile.absolutePath)
-//            if (!file.asFile.isJarFile()) {
-//                return@forEach
-//            }
+
             val jarFile = JarFile(file.asFile)
             var jarName = jarFile.name
             if (jarName.endsWith(".jar"))
                 jarName = jarName.substring(0, jarName.length - 4)
 
-            //val jarName = jarFile.name
             val enumeration = jarFile.entries()
-            val tmpFile =
-                File(file.asFile.parentFile.absolutePath + File.separator + "classes_temp.jar")
-            if (tmpFile.exists()) { // temp jar
-                tmpFile.delete()
-            }
-            val jarOutputStream = JarOutputStream(FileOutputStream(tmpFile))
 
+            val addedEntries: MutableSet<String> = HashSet()
             while (enumeration.hasMoreElements()) {
                 val jarEntry = enumeration.nextElement()
                 val entryName = jarEntry.name
+                if (entryName.contains("META-INF/") || addedEntries.contains(entryName))
+                    continue
+                addedEntries.add(entryName)
+
                 val zipEntry = ZipEntry(entryName)
                 val inputStream = jarFile.getInputStream(jarEntry)
 
                 println("----------- jarClass <' + $entryName + '> -----------")
                 if (checkClassFile(entryName, true)) {
-                    jarOutputStream.putNextEntry(zipEntry)
+                    jarOutput.putNextEntry(zipEntry)
+
                     val classReader = ClassReader(inputStream)
                     val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
                     val cv = ThreadTrackerClassVisitor(classWriter, jarName)
                     classReader.accept(cv, EXPAND_FRAMES)
                     val code = classWriter.toByteArray()
-                    jarOutputStream.write(code)
-                } else {
-                    jarOutputStream.putNextEntry(zipEntry)
-                    jarOutputStream.write(IOUtils.toByteArray(inputStream))
-                }
-                jarOutputStream.closeEntry()
-            }
-            jarOutputStream.close()
-            jarFile.close()
 
-            // override the old Jar
-            println(">>> copy jar from ${tmpFile.absolutePath} to ${file.asFile.absolutePath}")
-            FileUtils.copyFile(tmpFile, file.asFile)
-            tmpFile.delete()
+                    jarOutput.write(code)
+                }
+
+                jarOutput.closeEntry()
+            }
+            jarFile.close()
         }
 
         allDirectories.get().forEach { directory ->
