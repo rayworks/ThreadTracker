@@ -11,6 +11,9 @@ class ThreadTrackerInitializer : Initializer<Any> {
         Log.d(LOG_TAG, "ThreadTracker Initialize")
         UserPackage.buildPackageList()
         UserPackage.getPackageList().removeAt(0)
+
+        UserPackage.getPackageList().add(context.packageName)
+
         val list = UserPackage.getPackageList()
         Log.d(LOG_TAG, "package list:")
         list.forEach {
