@@ -69,22 +69,25 @@ afterEvaluate {
             }
         }
 
-        repositories {
-            maven {
-                name = "GitHubPackages"
+        if (dev_repo_enabled) {
+            repositories {
+                maven {
+                    url uri('../repositories')
+                }
+            }
+        } else {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
 
-                url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+                    url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
 
-                credentials {
-                    username = "${githubUserName}"
-                    password = "${githubToken}"
+                    credentials {
+                        username = "${githubUserName}"
+                        password = "${githubToken}"
+                    }
                 }
             }
         }
-        /*repositories {
-            maven {
-                url uri('../repositories')
-            }
-        }*/
     }
 }

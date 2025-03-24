@@ -3,20 +3,25 @@
 buildscript {
     ext {
         kotlin_version = '1.9.22'
-        threadtracker = '2.1.0'
+        threadtracker = '2.1.1'
+        dev_repo_enabled = false
     }
     repositories {
         google()
         mavenCentral()
-        maven {
-            url uri('./repositories') //指定本地maven路径
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
-            credentials {
-                username = "${githubUserName}"
-                password = "${githubToken}"
+
+        if (dev_repo_enabled) {
+            maven {
+                url uri('./repositories')
+            }
+        } else {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+                credentials {
+                    username = "${githubUserName}"
+                    password = "${githubToken}"
+                }
             }
         }
     }
@@ -31,15 +36,19 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        /*maven {
-            url uri('../repositories')
-        }*/
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
-            credentials {
-                username = "${githubUserName}"
-                password = "${githubToken}"
+
+        if(dev_repo_enabled) {
+            maven {
+                url uri('./repositories')
+            }
+        } else {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/rayworks/ThreadTracker")
+                credentials {
+                    username = "${githubUserName}"
+                    password = "${githubToken}"
+                }
             }
         }
     }

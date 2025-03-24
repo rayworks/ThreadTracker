@@ -58,7 +58,7 @@ class TrackerActivity : Activity() {
     }
 
     private fun refreshList(toast: Boolean) {
-        val infoResult = ThreadInfoManager.INSTANCE.buildAllThreadInfo()
+        val infoResult = ThreadInfoManager.INSTANCE.buildAllThreadInfo(log = true)
         runOnUiThread {
             val refreshBtn = findViewById<View>(R.id.refreshBtn)
             val refreshProgress = findViewById<View>(R.id.refreshProgress)
